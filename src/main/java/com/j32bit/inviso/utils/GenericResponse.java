@@ -1,5 +1,6 @@
 package com.j32bit.inviso.utils;
 
+import com.j32bit.inviso.enums.ResponseType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

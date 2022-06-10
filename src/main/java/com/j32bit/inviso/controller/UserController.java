@@ -4,13 +4,17 @@ import com.j32bit.inviso.domain.User;
 import com.j32bit.inviso.dto.UserDto;
 import com.j32bit.inviso.dto.request.UserLoginRequestDto;
 import com.j32bit.inviso.dto.request.UserRegistrationRequestDto;
-import com.j32bit.inviso.exception.InvisoException;
+import com.j32bit.inviso.dto.request.WithSpecRequestDto;
 import com.j32bit.inviso.service.AuthenticationService;
 import com.j32bit.inviso.service.UserService;
+import com.j32bit.inviso.shared.SearchSpecification;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,47 +29,39 @@ public class UserController {
     private final AuthenticationService authenticationService;
     private final UserService userService;
 
-    @GetMapping("/getAll/{page}/{size}")
-    public ResponseEntity<Page<UserDto>> getAll(@PathVariable(value = "page") int page, @PathVariable("size") int size) {
-        log.info("pagesize = " + page + " - " + size);
-        Page<UserDto> userDtos = userService
-                .findAll(page, size)
-                .map(e -> modelMapper.map(e, UserDto.class));
-
-        return new ResponseEntity<>(userDtos, HttpStatus.OK);
+    // {"filterRequest":[{"fieldName":"name","value":"deneme"},{"fieldName":"surname","value":"deneme1"}],"offset":0,"order":"ASC","limit":5}
+    /**
+     * Get all users with specification.
+     *
+     * @param withSpecRequestDto request body that contains query filters,
+     *                           paging information and sorting information.
+     * @return All users that match the given requirements
+     */
+    @PostMapping("/getAllWithSpec")
+    public ResponseEntity<Page<UserDto>> getAllWithSpec(@RequestBody WithSpecRequestDto withSpecRequestDto) {
+        return new ResponseEntity<>(userService.findAll(withSpecRequestDto), HttpStatus.OK);
     }
 
+    // {"data":{"name":"deneme","surname":"deneme","tcNumber":"11111111111","userName":"deneme","companyName":"deneme","occupation":"deneme","email":"deneme@deneme.com","address":"deneme","phoneNumber":"(999) 999-9999"},"serverURI":"http://natilus.invisoapp.com.tr/admin","userName":"sau"}
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody UserRegistrationRequestDto userRegistrationRequestDto) {
-        // convert dto to entity
-        User userRequest = modelMapper.map(userRegistrationRequestDto, User.class);
-        // save user
-        User user = userService.save(userRequest);
-        // convert entity to dto
-        UserDto userResponse = modelMapper.map(user, UserDto.class);
-
-        return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
+    public ResponseEntity<UserDto> create(@RequestBody UserRegistrationRequestDto userRegistrationRequestDto) {
+        return new ResponseEntity<>(userService.save(userRegistrationRequestDto), HttpStatus.CREATED);
     }
 
-    // incoming request body includes user id
+    // {"data":{"id":5,"email":"deneme@deneme.com","name":"deneme","surname":"deneme1","userName":"deneme","password":null,"tcNumber":"11111111111","companyName":"deneme","occupation":"deneme","phoneNumber":"(999) 999-9999","address":"deneme","isAdmin":0,"status":0,"roles":[{"id":2,"roleName":"USER","shortName":"USR"}]},"userName":"sau"}
     @PutMapping("/update")
-    public ResponseEntity<?> update(@RequestBody UserDto userDto) {
-        User userRequest = modelMapper.map(userDto, User.class);
-        User user = userService.update(userRequest);
-        UserDto userResponse = modelMapper.map(user, UserDto.class);
-
-        return new ResponseEntity<>(userResponse, HttpStatus.OK);
+    public ResponseEntity<UserDto> update(@RequestBody UserRegistrationRequestDto userRegistrationRequestDto) {
+        return new ResponseEntity<>(userService.update(userRegistrationRequestDto), HttpStatus.OK);
     }
 
-    // incoming request body includes user id
+    // {"id":5,"userName":"sau"}
     @DeleteMapping("/delete")
     public ResponseEntity<?> delete(@RequestBody UserDto userDto) {
-        User userRequest = modelMapper.map(userDto, User.class);
-        userService.delete(userRequest);
-
+        userService.delete(userDto);
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
+    // {"username": "admin32", "password": "password"}
     @PostMapping("/authenticate")
     public ResponseEntity<String> authenticate(@RequestBody UserLoginRequestDto userLoginRequestDto) {
         return new ResponseEntity<>(authenticationService.authenticate(userLoginRequestDto), HttpStatus.OK);

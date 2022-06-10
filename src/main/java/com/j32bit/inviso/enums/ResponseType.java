@@ -1,4 +1,4 @@
-package com.j32bit.inviso.utils;
+package com.j32bit.inviso.enums;
 
 /**
  * Response type for the responses that is returned from controller endpoints.

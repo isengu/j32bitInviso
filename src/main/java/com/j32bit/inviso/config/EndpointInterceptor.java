@@ -23,7 +23,10 @@ public class EndpointInterceptor implements HandlerInterceptor {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if(!name.isEmpty()) {
-            log.info("{} is making request to {}. IP: {}", name, request.getRequestURI(), request.getRemoteHost());
+            log.info("{} is making request to {}. IP: {}",
+                    name,
+                    request.getRequestURI(),
+                    request.getRemoteHost());
         }
 
         return HandlerInterceptor.super.preHandle(request, response, handler);
@@ -40,7 +43,10 @@ public class EndpointInterceptor implements HandlerInterceptor {
         String name = SecurityContextHolder.getContext().getAuthentication().getName();
 
         if(!name.isEmpty()) {
-            log.info("{} made request to {}. IP: {}", name, request.getRequestURI(), request.getRemoteHost());
+            log.info("{} made request to {}. IP: {}",
+                    name,
+                    request.getRequestURI(),
+                    request.getRemoteHost());
         }
     }
 
