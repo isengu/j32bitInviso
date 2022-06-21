@@ -1,8 +1,8 @@
 package com.j32bit.inviso.service;
 
 
-import com.j32bit.inviso.domain.Role;
-import com.j32bit.inviso.domain.User;
+import com.j32bit.inviso.dto.RoleDto;
+import com.j32bit.inviso.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,8 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j2
 @Service
@@ -26,10 +26,10 @@ public class InvisoUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userService.findByUsername(username);
-        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+        UserDto user = userService.findByUsername(username);
+        List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
 
-        for (Role role : user.getRoles()) {
+        for (RoleDto role : user.getRoles()) {
             log.debug("loadUserByUsername: user: " + user.getUsername() + " role: " + role.getRoleName());
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getRoleName()));
         }

@@ -1,25 +1,30 @@
 package com.j32bit.inviso.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j32bit.inviso.domain.User;
 import com.j32bit.inviso.dto.UserDto;
-import com.j32bit.inviso.dto.request.UserRegistrationRequestDto;
 import com.j32bit.inviso.dto.request.WithSpecRequestDto;
+import com.j32bit.inviso.enums.SearchOperation;
 import com.j32bit.inviso.exception.InvisoException;
 import com.j32bit.inviso.repository.UserRepository;
 import com.j32bit.inviso.shared.SearchSpecification;
+import com.j32bit.inviso.utils.SearchCriteria;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.Filter;
 import org.hibernate.Session;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import java.util.Set;
 
 @Log4j2
 @Service
@@ -28,45 +33,114 @@ public class UserService {
     private final EntityManager entityManager;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final ObjectMapper objectMapper;
 
-    // it returns domain not dto because it's protected so it can be only used between services and not in controller
-    protected User findByUsername(String username) throws UsernameNotFoundException {
-        return userRepository
+    /**
+     * Find user with the given username.
+     *
+     * @param username the given username.
+     * @return {@link UserDto} of requested user.
+     */
+    public UserDto findByUsername(String username) {
+        Session session = entityManager.unwrap(Session.class);
+        Filter filter = session.enableFilter("deletedUserFilter");
+        filter.setParameter("status", (byte) 0);
+
+        User user = userRepository
                 .findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found in database!"));
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User " + username + " not found in database!"));
+
+        session.disableFilter("deletedUserFilter");
+
+        return modelMapper.map(user, UserDto.class);
     }
 
+    /**
+     * Find all users that match given criterias.
+     *
+     * @param withSpecRequestDto request body that contains specifications.
+     * @return {@link Page} containing {@link UserDto}s.
+     */
     public Page<UserDto> findAll(WithSpecRequestDto withSpecRequestDto) {
-        Session session = entityManager.unwrap(Session.class);
+        Set<SearchCriteria> criterias = withSpecRequestDto.getFilterRequest();
+
+        // if "status=1"(deleted) isn't specified always add "status=0"(not deleted) creteria
+        if (!criterias.contains(new SearchCriteria("status", "1", null))) {
+            criterias.add(new SearchCriteria("status", "0", SearchOperation.EQUAL));
+        }
+
         SearchSpecification<User> searchSpecification =
-                new SearchSpecification<User>(withSpecRequestDto.getFilterRequest());
+                new SearchSpecification<>(criterias);
 
         Sort sort = withSpecRequestDto.getOrder().equals("ASC") ?
                 Sort.by(Sort.Direction.ASC, "id") : Sort.by(Sort.Direction.DESC, "id");
 
-        final int page = withSpecRequestDto.getOffset() / withSpecRequestDto.getLimit();
+        int pageNumber = withSpecRequestDto.getOffset() / withSpecRequestDto.getLimit();
 
-        Pageable pageable = PageRequest.of(page, withSpecRequestDto.getLimit(), sort);
+        Pageable pageable = PageRequest.of(pageNumber, withSpecRequestDto.getLimit(), sort);
 
-        return userRepository
-                .findAll(searchSpecification, pageable)
-                .map(e -> modelMapper.map(e, UserDto.class));
+        Page<User> page = userRepository.findAll(searchSpecification, pageable);
+
+        return page.map(e -> modelMapper.map(e, UserDto.class));
     }
 
-    public UserDto save(UserRegistrationRequestDto userRegistrationRequestDto) {
-        User user = modelMapper.map(userRegistrationRequestDto, User.class);
+    /**
+     * Register a new user.
+     *
+     * @param userDto contains new user's information.
+     * @return {@link UserDto} of newly saved user.
+     */
+    public UserDto save(UserDto userDto) {
+        User user = modelMapper.map(userDto, User.class);
+
+        if (user.getPassword() != null && user.getId() != null) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+
         return modelMapper.map(userRepository.save(user), UserDto.class);
     }
 
-    public UserDto update(UserRegistrationRequestDto userRegistrationRequestDto) {
-        if (userRegistrationRequestDto.getId() == null) {
-            throw new InvisoException("Please provide an id to update an existing record.");
+    /**
+     * Update an existing user.
+     *
+     * @param userDto contains existing user's id and
+     *                other fields that's gonna be updated.
+     * @return {@link UserDto} of updated user.
+     */
+    public UserDto update(UserDto userDto) {
+        if (userDto.getId() == null) {
+            throw new InvisoException("Please provide the id to update an existing record.");
         }
-        return this.save(userRegistrationRequestDto);
+
+        // get user with the id from database
+        User existingUser = userRepository.findById(userDto.getId())
+                .orElseThrow(() ->
+                        new InvisoException("User could not found with id: " + userDto.getId()));
+
+        try {
+            // merge fields of existing user and given user
+            User updatedUser = objectMapper.readerForUpdating(existingUser)
+                    .readValue(objectMapper.writeValueAsString(userDto));
+
+            if (userDto.getPassword() != null) {
+                updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+            }
+
+            // save the merged user
+            return this.save(modelMapper.map(updatedUser, UserDto.class));
+        } catch (JsonProcessingException e) {
+            throw new InvisoException("json processing error");
+        }
     }
 
+    /**
+     * Delete (soft delete) an existing user.
+     *
+     * @param userDto contains id of user to be deleted.
+     */
     public void delete(UserDto userDto) {
-        User user = modelMapper.map(userDto, User.class);
-        userRepository.delete(user);
+        userRepository.deleteById(userDto.getId());
     }
 }

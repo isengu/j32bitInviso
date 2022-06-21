@@ -1,4 +1,4 @@
-package com.j32bit.inviso.config;
+package com.j32bit.inviso.security;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

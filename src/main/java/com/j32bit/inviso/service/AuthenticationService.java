@@ -1,6 +1,5 @@
 package com.j32bit.inviso.service;
 
-import com.j32bit.inviso.dto.request.UserLoginRequestDto;
 import com.j32bit.inviso.exception.InvisoException;
 import com.j32bit.inviso.utils.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +24,11 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final InvisoUserDetailsService invisioUserDetailsService;
 
-    public String authenticate(UserLoginRequestDto userLoginRequestDto) {
+    public String authenticate(String username, String password) {
         final Authentication authentication;
 
         try {
-            authentication = authenticateToken(userLoginRequestDto);
+            authentication = authenticateToken(username, password);
         } catch (DisabledException e) {
             throw new InvisoException("User is disabled!");
         } catch (BadCredentialsException e) {
@@ -40,20 +39,20 @@ public class AuthenticationService {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return jwtTokenUtil.generateToken(userLoginRequestDto.getUsername());
+        return jwtTokenUtil.generateToken(username);
     }
 
-    private Authentication authenticateToken(UserLoginRequestDto userLoginRequestDTO) {
+    private Authentication authenticateToken(String username, String password) {
 
-        log.info("Authenticating for user: {}", userLoginRequestDTO.getUsername());
+        log.info("Authenticating for user: {}", username);
 
         final UserDetails storedUserDetails = invisioUserDetailsService
-                .loadUserByUsername(userLoginRequestDTO.getUsername());
+                .loadUserByUsername(username);
 
         return authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         storedUserDetails,
-                        userLoginRequestDTO.getPassword(),
+                        password,
                         storedUserDetails.getAuthorities()
                 ));
     }

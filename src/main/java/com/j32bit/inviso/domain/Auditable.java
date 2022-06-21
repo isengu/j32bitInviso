@@ -16,7 +16,7 @@ import java.sql.Timestamp;
 @Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-abstract class Auditable implements Serializable {
+public abstract class Auditable implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -27,10 +27,10 @@ public class ControlMetadata implements Serializable {
     @JoinColumn(name = "control_metadata_id")
     private List<FormComponentData> formComponentDatas;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Application application;
+    @ManyToOne
+    private ApplicationVersion applicationVersion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private User user;
 
 }

@@ -6,8 +6,8 @@
 				pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
 		</Console>
 		<RollingFile name="RollingFileAppender"
-			fileName="Logs/application.log"
-			filePattern="Logs/application.%d{yyyy-MM-dd-hh-mm}.zip">
+			fileName="Logs/applicationVersion.log"
+			filePattern="Logs/applicationVersion.%d{yyyy-MM-dd-hh-mm}.zip">
 			<PatternLayout>
 				<Pattern>%d{yyyy-MM-dd hh-mm-ss} %-5p %m%n</Pattern>
 			</PatternLayout>

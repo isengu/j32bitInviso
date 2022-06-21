@@ -168,3 +168,14 @@ VALUES(3, 'SUPERVISOR', 'SPRVSR');
 INSERT INTO backend."role"
 (id, role_name, short_name)
 VALUES(4, 'REPORTER', 'RPRTR');
+
+-- User Data --
+INSERT INTO backend."user"
+(created_at, created_by, updated_at, updated_by, address, company_name, email, is_admin, "name", occupation, "password", phone, reset_key, status, surname, tc_number, username)
+VALUES('2022-06-19 18:51:40.647', 'anonymousUser', '2022-06-19 18:51:40.647', 'anonymousUser', 'sau', 'sau', 'sau@sau.com', 0, 'sau', 'sau', '2405c79d70f52098b0647f79e96616d8', '(999) 999-9999', NULL, 0, 'sau', '11111111111', 'sau');
+INSERT INTO backend.user_role
+(user_id, role_id)
+VALUES(1, 1);
+INSERT INTO backend.user_role
+(user_id, role_id)
+VALUES(1, 2);

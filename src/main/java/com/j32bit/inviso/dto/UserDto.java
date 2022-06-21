@@ -1,5 +1,6 @@
 package com.j32bit.inviso.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @Builder
@@ -22,14 +23,17 @@ public class UserDto implements Serializable {
 	private String email;
 	private String name;
 	private String surname;
+	@JsonProperty("userName")
 	private String username;
+	private String password;
 	private String tcNumber;
 	private String companyName;
 	private String occupation;
+	@JsonProperty("phoneNumber")
 	private String phone;
 	private String address;
-	private byte isAdmin;
-	private byte status;
-	private Set<RoleDto> roles;
+	private byte isAdmin = 0;
+	private byte status = 0;
+	private List<RoleDto> roles;
 
 }

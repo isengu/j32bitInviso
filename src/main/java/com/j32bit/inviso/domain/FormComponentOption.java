@@ -23,7 +23,7 @@ public class FormComponentOption implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Option option;
 
     private String key;

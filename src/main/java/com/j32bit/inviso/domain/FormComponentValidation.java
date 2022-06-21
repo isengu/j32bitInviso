@@ -14,7 +14,7 @@ public class FormComponentValidation implements Serializable {
     private String errorMessage;
     private String value;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Validation validation;
 
 }

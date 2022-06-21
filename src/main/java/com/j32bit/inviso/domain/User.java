@@ -1,20 +1,20 @@
 package com.j32bit.inviso.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
-import java.sql.Timestamp;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -25,55 +25,33 @@ import java.util.Set;
         @UniqueConstraint(name = "uc_user_username", columnNames = {"username"}),
         @UniqueConstraint(name = "uc_user_email", columnNames = {"email"})
 })
-public class User implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@SQLDelete(sql = "UPDATE backend.user SET status = 1 WHERE id=?")
+@FilterDef(name = "deletedUserFilter", parameters = @ParamDef(name = "status", type = "byte"))
+@Filter(name = "deletedUserFilter", condition = "status = :status")
+public class User extends Auditable implements Serializable {
 
     private String name;
-
     private String surname;
-
     @Column(unique = true, nullable = false)
     private String email;
-
+    @JsonProperty("phoneNumber")
     private String phone;
-
     private String address;
-
     private String companyName;
-
     private String occupation;
-
     private String tcNumber;
-
     @Column(unique = true, nullable = false)
+    @JsonProperty("userName")
     private String username;
-
     private String password;
-
-    private Timestamp createdAt;
-
-    private String createdBy;
-
-    private Timestamp updatedAt;
-
-    private String updatedBy;
-
-    private byte status;
-
-    private byte isAdmin;
-
+    private byte status = 0;
+    private byte isAdmin = 0;
     private String resetKey;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
 	@JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Role> roles = new HashSet<>();
+	private List<Role> roles = new ArrayList<>();
 
 }

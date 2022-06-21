@@ -1,6 +1,22 @@
 DROP SCHEMA backend CASCADE;
 CREATE SCHEMA backend AUTHORIZATION postgres;
 
+-- backend.application definition
+
+-- Drop table
+
+-- DROP TABLE backend.application;
+
+CREATE TABLE backend.application (
+	id bigserial NOT NULL,
+	created_at timestamp NOT NULL,
+	created_by varchar(255) NOT NULL,
+	updated_at timestamp NULL,
+	updated_by varchar(255) NULL,
+	CONSTRAINT application_pkey PRIMARY KEY (id)
+);
+
+
 -- backend.component definition
 
 -- Drop table
@@ -85,46 +101,13 @@ CREATE TABLE backend.validation (
 );
 
 
--- backend.user_application definition
+-- backend.application_version definition
 
 -- Drop table
 
--- DROP TABLE backend.user_application;
+-- DROP TABLE backend.application_version;
 
-CREATE TABLE backend.user_application (
-	id bigserial NOT NULL,
-	created_at timestamp NOT NULL,
-	created_by varchar(255) NOT NULL,
-	updated_at timestamp NULL,
-	updated_by varchar(255) NULL,
-	user_id int8 NULL,
-	CONSTRAINT user_application_pkey PRIMARY KEY (id),
-	CONSTRAINT fk483kmnovbg9ccip3mj0keku9m FOREIGN KEY (user_id) REFERENCES backend."user"(id)
-);
-
-
--- backend.user_role definition
-
--- Drop table
-
--- DROP TABLE backend.user_role;
-
-CREATE TABLE backend.user_role (
-	user_id int8 NOT NULL,
-	role_id int8 NOT NULL,
-	CONSTRAINT user_role_pkey PRIMARY KEY (user_id, role_id),
-	CONSTRAINT fk859n2jvi8ivhui0rl0esws6o FOREIGN KEY (user_id) REFERENCES backend."user"(id),
-	CONSTRAINT fka68196081fvovjhkek5m97n3y FOREIGN KEY (role_id) REFERENCES backend."role"(id)
-);
-
-
--- backend.application definition
-
--- Drop table
-
--- DROP TABLE backend.application;
-
-CREATE TABLE backend.application (
+CREATE TABLE backend.application_version (
 	id bigserial NOT NULL,
 	created_at timestamp NOT NULL,
 	created_by varchar(255) NOT NULL,
@@ -134,11 +117,11 @@ CREATE TABLE backend.application (
 	"name" varchar(255) NULL,
 	short_name varchar(255) NULL,
 	status int2 NOT NULL,
-	"version" float8 NULL,
-	user_application_id int8 NULL,
-	CONSTRAINT application_pkey PRIMARY KEY (id),
-	CONSTRAINT uc_application_shortname UNIQUE (short_name, version),
-	CONSTRAINT fk14fknk6yb16u5kpdcbkv8uok7 FOREIGN KEY (user_application_id) REFERENCES backend.user_application(id)
+	"version" numeric(19, 2) NULL,
+	application_id int8 NULL,
+	CONSTRAINT application_version_pkey PRIMARY KEY (id),
+	CONSTRAINT uc_application_version_shortname_version UNIQUE (short_name, version),
+	CONSTRAINT fkhfvphvt4y62yj3fcftrmpt8f8 FOREIGN KEY (application_id) REFERENCES backend.application(id)
 );
 
 
@@ -155,12 +138,12 @@ CREATE TABLE backend.control_metadata (
 	coordinatex int8 NULL,
 	coordinatey int8 NULL,
 	state_code varchar(255) NULL,
-	application_id int8 NULL,
+	application_version_id int8 NULL,
 	user_id int8 NULL,
 	CONSTRAINT control_metadata_pkey PRIMARY KEY (id),
 	CONSTRAINT uk_d17x2s9vp78j2ny6saubuhsh0 UNIQUE (barcode),
-	CONSTRAINT fk8wrcxsruoucympmr8upc59hr8 FOREIGN KEY (user_id) REFERENCES backend."user"(id),
-	CONSTRAINT fkikgu82dv5uubot0bhu9joewli FOREIGN KEY (application_id) REFERENCES backend.application(id)
+	CONSTRAINT fk2d59efqu5d53bx3i8n29lxbyq FOREIGN KEY (application_version_id) REFERENCES backend.application_version(id),
+	CONSTRAINT fk8wrcxsruoucympmr8upc59hr8 FOREIGN KEY (user_id) REFERENCES backend."user"(id)
 );
 
 
@@ -181,9 +164,39 @@ CREATE TABLE backend.page (
 	page_number int4 NULL,
 	short_name varchar(255) NULL,
 	title varchar(255) NULL,
-	application_id int8 NULL,
+	application_version_id int8 NULL,
 	CONSTRAINT page_pkey PRIMARY KEY (id),
-	CONSTRAINT fk8kg0iuiduf9eww6inekbv89cr FOREIGN KEY (application_id) REFERENCES backend.application(id)
+	CONSTRAINT fk95bc2579h3rwopmihmxg77i2w FOREIGN KEY (application_version_id) REFERENCES backend.application_version(id)
+);
+
+
+-- backend.user_application definition
+
+-- Drop table
+
+-- DROP TABLE backend.user_application;
+
+CREATE TABLE backend.user_application (
+	user_id int8 NOT NULL,
+	application_id int8 NOT NULL,
+	CONSTRAINT user_application_pkey PRIMARY KEY (user_id, application_id),
+	CONSTRAINT fk483kmnovbg9ccip3mj0keku9m FOREIGN KEY (user_id) REFERENCES backend."user"(id),
+	CONSTRAINT fk8n17vi0mc676sranq3umd4oal FOREIGN KEY (application_id) REFERENCES backend.application(id)
+);
+
+
+-- backend.user_role definition
+
+-- Drop table
+
+-- DROP TABLE backend.user_role;
+
+CREATE TABLE backend.user_role (
+	user_id int8 NOT NULL,
+	role_id int8 NOT NULL,
+	CONSTRAINT user_role_pkey PRIMARY KEY (user_id, role_id),
+	CONSTRAINT fk859n2jvi8ivhui0rl0esws6o FOREIGN KEY (user_id) REFERENCES backend."user"(id),
+	CONSTRAINT fka68196081fvovjhkek5m97n3y FOREIGN KEY (role_id) REFERENCES backend."role"(id)
 );
 
 

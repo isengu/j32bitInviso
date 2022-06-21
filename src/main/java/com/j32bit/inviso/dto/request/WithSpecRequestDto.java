@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * The request DTO that is being used in findAll requests
@@ -19,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 public class WithSpecRequestDto {
 
-    private List<SearchCriteria> filterRequest;
+    private Set<SearchCriteria> filterRequest;
     private int offset;
     private String order;
     private int limit;

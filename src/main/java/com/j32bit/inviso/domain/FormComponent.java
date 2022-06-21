@@ -27,7 +27,7 @@ public class FormComponent extends Auditable implements Serializable {
     private Integer rowNumber;
     private String colAlign;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Component component;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

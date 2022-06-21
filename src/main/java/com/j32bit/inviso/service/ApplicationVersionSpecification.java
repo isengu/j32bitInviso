@@ -1,27 +1,30 @@
-package com.j32bit.inviso.shared;
+package com.j32bit.inviso.service;
 
+import com.j32bit.inviso.domain.ApplicationVersion;
 import com.j32bit.inviso.enums.SearchOperation;
 import com.j32bit.inviso.utils.SearchCriteria;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.math.BigDecimal;
+import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 /**
+ * Difference from SearchSpecification is this one creates
+ * a subquery as in below and adds it as specification at the beggining.
+ * Then adds given specifications.
  *
- * @param <T> entity
+ * Main query:
+ * Select a From ApplicationVersion a Where a.version =
+ * (Select max(a1.version) From ApplicationVersion a1
+ * Where a1.application.id = a.application.id)
  */
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchSpecification<T> implements Specification<T> {
+public class ApplicationVersionSpecification implements Specification<ApplicationVersion> {
 
     private Set<SearchCriteria> searchCriteriaList;
 
@@ -30,8 +33,15 @@ public class SearchSpecification<T> implements Specification<T> {
     }
 
     @Override
-    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+    public Predicate toPredicate(Root<ApplicationVersion> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
+
+        Subquery<Long> subQuery = query.subquery(Long.class);
+        Root<ApplicationVersion> subRoot = subQuery.from(ApplicationVersion.class);
+        subQuery.select(criteriaBuilder.max(subRoot.get("version")));
+        subQuery.where(criteriaBuilder.equal(subRoot.get("application"), root.get("application")));
+
+        predicates.add(criteriaBuilder.equal(root.get("version"), subQuery));
 
         for (SearchCriteria criteria : searchCriteriaList) {
             if (criteria.getOperation().equals(SearchOperation.GREATER_THAN)) {
@@ -71,7 +81,7 @@ public class SearchSpecification<T> implements Specification<T> {
             }
         }
 
+
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     }
-
 }

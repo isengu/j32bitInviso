@@ -1,5 +1,6 @@
 package com.j32bit.inviso.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,11 @@ public class FormComponentDto implements Serializable {
     private String colAlign;
     private Integer colNumber;
     private Integer rowNumber;
-    private ComponentDto component;
+    @JsonProperty("formComponentId")
+    private Long componentId;
+    @JsonProperty("type")
+    private String componentType;
     private List<FormComponentOptionDto> formComponentOptions;
     private List<FormComponentValidationDto> formComponentValidations;
+
 }
