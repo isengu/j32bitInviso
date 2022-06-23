@@ -292,6 +292,8 @@ CREATE TABLE backend.form_component_validation (
 	id bigserial NOT NULL,
 	error_message varchar(255) NULL,
 	value varchar(255) NULL,
+	"selectable" bool NULL,
+	"type" int4 NULL,
 	validation_id int8 NULL,
 	form_component_id int8 NULL,
 	CONSTRAINT form_component_validation_pkey PRIMARY KEY (id),

@@ -32,6 +32,11 @@ public class ApplicationStructureController {
     private final ObjectMapper objectMapper;
     private final ModelMapper modelMapper;
 
+    @GetMapping("/getAllApplications")
+    public ResponseEntity<List<ApplicationReqResDto>> getAllApplications() {
+        return new ResponseEntity<>(applicationVersionService.getAllApplications(), HttpStatus.OK);
+    }
+
     @PostMapping("/getStructureNamesBySpec")
     public ResponseEntity<?> getStructureNamesBySpec(@RequestBody WithSpecRequestDto withSpecRequestDto) {
         Page<ApplicationStructureNameDto> page =
@@ -74,11 +79,6 @@ public class ApplicationStructureController {
     @PostMapping("/saveStructure")
     public ResponseEntity<?> saveStructure(@RequestBody String json) {
         return new ResponseEntity<>(applicationVersionService.save(json).getId(), HttpStatus.OK);
-    }
-
-    @PostMapping("/getAllWithSpec")
-    public ResponseEntity<Page<ApplicationVersionDto>> getAllWithSpec(@RequestBody WithSpecRequestDto withSpecRequestDto) {
-        return new ResponseEntity<>(applicationVersionService.findAll(withSpecRequestDto), HttpStatus.OK);
     }
 
 }

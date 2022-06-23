@@ -36,8 +36,17 @@ public class ApplicationVersionService {
     private final ApplicationService applicationService;
     private final ModelMapper modelMapper;
 
+    public List<ApplicationReqResDto> getAllApplications() {
+        return applicationVersionRepository
+                .getAll()
+                .stream()
+                .map(e -> ApplicationReqResConverter.toResponse(
+                        modelMapper.map(e, ApplicationVersionDto.class)))
+                .collect(Collectors.toList());
+    }
+
     public Page<ApplicationStructureNameDto> getStructureNamesWithSpec(WithSpecRequestDto withSpecRequestDto) {
-        return this.findAll(withSpecRequestDto)
+        return this.findAllWithSpec(withSpecRequestDto)
                 .map(e -> modelMapper.map(e, ApplicationStructureNameDto.class));
     }
 
@@ -49,7 +58,7 @@ public class ApplicationVersionService {
         return applicationVersionRepository.getStructureNamesOfUser(username);
     }
 
-    public Page<ApplicationVersionDto> findAll(WithSpecRequestDto withSpecRequestDto) {
+    public Page<ApplicationVersionDto> findAllWithSpec(WithSpecRequestDto withSpecRequestDto) {
         Set<SearchCriteria> criterias = withSpecRequestDto.getFilterRequest();
 
         // if "status=1"(deleted) isn't specified always add "status=0"(not deleted) creteria

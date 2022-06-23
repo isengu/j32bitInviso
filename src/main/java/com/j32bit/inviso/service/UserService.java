@@ -24,7 +24,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -63,7 +65,7 @@ public class UserService {
      * @param withSpecRequestDto request body that contains specifications.
      * @return {@link Page} containing {@link UserDto}s.
      */
-    public Page<UserDto> findAll(WithSpecRequestDto withSpecRequestDto) {
+    public Page<UserDto> findAllWithSpec(WithSpecRequestDto withSpecRequestDto) {
         Set<SearchCriteria> criterias = withSpecRequestDto.getFilterRequest();
 
         // if "status=1"(deleted) isn't specified always add "status=0"(not deleted) creteria
@@ -84,6 +86,19 @@ public class UserService {
         Page<User> page = userRepository.findAll(searchSpecification, pageable);
 
         return page.map(e -> modelMapper.map(e, UserDto.class));
+    }
+
+    /**
+     * Find all users.
+     *
+     * @return List of {@link UserDto}s
+     */
+    public List<UserDto> findAll() {
+        return userRepository
+                .findAll()
+                .stream()
+                .map(e -> modelMapper.map(e, UserDto.class))
+                .collect(Collectors.toList());
     }
 
     /**

@@ -122,6 +122,9 @@ VALUES(19, 'Signature');
 INSERT INTO backend."option"
 (id, "type")
 VALUES(20, 'Notify');
+INSERT INTO backend."option"
+(id, "type")
+VALUES(21, 'Image');
 
 -- Validation Data --
 INSERT INTO backend.validation

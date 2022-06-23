@@ -27,6 +27,6 @@ public class ApplicationVersionDto implements Serializable {
     private BigDecimal version;
     private byte status = 0;
     private List<PageDto> pages;
-    private ApplicationDto Application;
+    private ApplicationDto application;
 
 }

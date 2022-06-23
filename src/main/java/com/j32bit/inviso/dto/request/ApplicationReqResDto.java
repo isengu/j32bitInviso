@@ -4,8 +4,10 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 @Getter
 @Setter
@@ -51,6 +53,76 @@ public class ApplicationReqResDto {
         private Boolean isPageNameHide;
         private Boolean homePage;
         private List<Form> forms;
+        private List<Navigation> navigations;
+
+        @Getter
+        @Setter
+        @Builder
+        @AllArgsConstructor
+        @NoArgsConstructor
+        public static class Navigation {
+            private Long id;
+            private Integer orderNumber;
+            private String name;
+            private Function functions;
+
+            public static Navigation create(Integer orderNumber, Long applicationId, String text, String pageShortName) {
+                return Navigation.builder()
+                        .orderNumber(orderNumber)
+                        .name(text)
+                        .functions(Function.builder()
+                                .description("Navigation")
+                                .functionDetail("$state.go(\"" + pageShortName + "\");")
+                                .applicationId(applicationId)
+                                .functionType(FunctionType.navigation())
+                                .build())
+                        .build();
+            }
+
+            public static Navigation create(Integer orderNumber, Long applicationId, String text) {
+                return Navigation.builder()
+                        .orderNumber(orderNumber)
+                        .name(text)
+                        .functions(Function.builder()
+                                .description("submit")
+                                .functionDetail("submit(false)")
+                                .applicationId(applicationId)
+                                .functionType(FunctionType.submit())
+                                .build())
+                        .build();
+            }
+
+            @Getter
+            @Setter
+            @Builder
+            @AllArgsConstructor
+            @NoArgsConstructor
+            public static class Function {
+                private Long id;
+                private String description;
+                private String functionDetail;
+                private Long applicationId;
+                private FunctionType functionType;
+            }
+
+            @Getter
+            @Setter
+            @Builder
+            @AllArgsConstructor
+            @NoArgsConstructor
+            public static class FunctionType {
+                private Long id;
+                private String name;
+                private String value;
+
+                public static FunctionType navigation() {
+                    return new FunctionType(3L, "Navigation Functions", "3");
+                }
+                public static FunctionType submit() {
+                    return new FunctionType(1L, "STATIC_FUNCTIONS", "1");
+                }
+            }
+        }
     }
 
     @Getter
@@ -117,5 +189,7 @@ public class ApplicationReqResDto {
         private String name;
         private String value;
         private String errorMessage;
+        private Boolean selectable;
+        private Integer type;
     }
 }

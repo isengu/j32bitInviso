@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Log4j2
@@ -39,13 +40,23 @@ public class UserController {
      */
     @PostMapping("/getAllWithSpec")
     public ResponseEntity<?> getAllWithSpec(@RequestBody WithSpecRequestDto withSpecRequestDto) {
-        Page<UserDto> page = userService.findAll(withSpecRequestDto);
+        Page<UserDto> page = userService.findAllWithSpec(withSpecRequestDto);
 
         Map<String, Object> response = new HashMap<>();
         response.put("objList", page.getContent());
         response.put("totalSize", page.getTotalElements());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * Get all users as a list.
+     *
+     * @return List of {@link UserDto}s
+     */
+    @GetMapping("/getAllUsers")
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
     }
 
     /**

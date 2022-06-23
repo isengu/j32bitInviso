@@ -17,9 +17,24 @@ public class ApplicationReqResConverter {
 
     public static ApplicationReqResDto toResponse(ApplicationVersionDto applicationVersionDto) {
         List<ApplicationReqResDto.Page> pageList = new ArrayList<>();
+
         if (applicationVersionDto.getPages() != null) {
-            for (PageDto pageDto : applicationVersionDto.getPages()) {
-                pageList.add(transformPage(pageDto));
+            int totalPage = applicationVersionDto.getPages().size();
+
+            for (int i = 0; i < totalPage; i++) {
+                PageDto pageDtoPrevious = i == 0 ?
+                        null : applicationVersionDto.getPages().get(i-1);
+
+                PageDto pageDtoNext = i == totalPage-1 ?
+                        null : applicationVersionDto.getPages().get(i+1);
+
+                PageDto pageDto = applicationVersionDto.getPages().get(i);
+
+                pageList.add(transformPage(
+                        pageDto,
+                        applicationVersionDto.getApplication().getId(),
+                        pageDtoPrevious,
+                        pageDtoNext));
             }
         }
 
@@ -68,7 +83,7 @@ public class ApplicationReqResConverter {
                                     Double.parseDouble(structure.getVersion().getVersion()))
                                     .add(BigDecimal.valueOf(0.1)))
                     .pages(pageDtoList)
-                    .Application(ApplicationDto.builder()
+                    .application(ApplicationDto.builder()
                             .id(structure.getId())
                             .build())
                     .build();
@@ -92,7 +107,37 @@ public class ApplicationReqResConverter {
                 .build();
     }
 
-    private static ApplicationReqResDto.Page transformPage(PageDto pageDto) {
+    private static ApplicationReqResDto.Page transformPage(PageDto pageDto, Long applicationId, PageDto pageDtoPrevious, PageDto pageDtoNext) {
+        // Create Navigations
+        List<ApplicationReqResDto.Page.Navigation> navigationList = new ArrayList<>();
+        int orderNumber = 0;
+        if (pageDtoPrevious != null) {
+            // navigation to previous page
+            navigationList.add(ApplicationReqResDto.Page.Navigation
+                            .create(
+                                    orderNumber++,
+                                    applicationId,
+                                    "Previous Page",
+                                    pageDtoPrevious.getShortName()));
+        }
+        if (pageDtoNext != null) {
+            // navigation to next page
+            navigationList.add(ApplicationReqResDto.Page.Navigation
+                    .create(
+                            orderNumber++,
+                            applicationId,
+                            "Next Page",
+                            pageDtoNext.getShortName()));
+        } else {
+            // submit
+            navigationList.add(ApplicationReqResDto.Page.Navigation
+                    .create(
+                            orderNumber++,
+                            applicationId,
+                            "submit"));
+        }
+
+        // transform nested sections
         List<ApplicationReqResDto.Form> formList = new ArrayList<>();
         for (FormDto formDto : pageDto.getForms()) {
             formList.add(transformForm(formDto));
@@ -106,6 +151,7 @@ public class ApplicationReqResConverter {
                 .isPageNameHide(pageDto.getIsPageNameHidden())
                 .homePage(pageDto.getIsHomePage())
                 .forms(formList)
+                .navigations(navigationList)
                 .build();
     }
 
@@ -228,19 +274,22 @@ public class ApplicationReqResConverter {
         return FormComponentValidationDto.builder()
                 .errorMessage(validation.getErrorMessage())
                 .value(validation.getValue())
-                .validation(ValidationDto.builder()
-                        .id(validation.getId())
-                        .build())
+                .validationId(validation.getId())
+                .validationName(validation.getName())
+                .selectable(validation.getSelectable())
+                .type(validation.getType())
                 .build();
     }
 
     private static ApplicationReqResDto.Validation transformValidation(
             FormComponentValidationDto formComponentValidationDto) {
         return ApplicationReqResDto.Validation.builder()
-                .id(formComponentValidationDto.getValidation().getId())
+                .id(formComponentValidationDto.getValidationId())
                 .errorMessage(formComponentValidationDto.getErrorMessage())
-                .name(formComponentValidationDto.getValidation().getName())
+                .name(formComponentValidationDto.getValidationName())
                 .value(formComponentValidationDto.getValue())
+                .selectable(formComponentValidationDto.getSelectable())
+                .type(formComponentValidationDto.getType())
                 .build();
     }
 

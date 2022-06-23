@@ -11,5 +11,6 @@ public class SaveRequestBaseDto<T> {
 
     private T data;
     private String userName;
+    private Long applicationId;
 
 }
