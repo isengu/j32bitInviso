@@ -6,14 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -36,42 +31,55 @@ public class SearchSpecification<T> implements Specification<T> {
         for (SearchCriteria criteria : searchCriteriaList) {
             if (criteria.getOperation().equals(SearchOperation.GREATER_THAN)) {
                 predicates.add(criteriaBuilder.greaterThan(
-                        root.get(criteria.getFieldName()), criteria.getValue().toString()));
+                        getPath(root, criteria.getFieldName()), criteria.getValue().toString()));
             } else if (criteria.getOperation().equals(SearchOperation.LESS_THAN)) {
                 predicates.add(criteriaBuilder.lessThan(
-                        root.get(criteria.getFieldName()), criteria.getValue().toString()));
+                        getPath(root, criteria.getFieldName()), criteria.getValue().toString()));
             } else if (criteria.getOperation().equals(SearchOperation.GREATER_THAN_EQUAL)) {
                 predicates.add(criteriaBuilder.greaterThanOrEqualTo(
-                        root.get(criteria.getFieldName()), criteria.getValue().toString()));
+                        getPath(root, criteria.getFieldName()), criteria.getValue().toString()));
             } else if (criteria.getOperation().equals(SearchOperation.LESS_THAN_EQUAL)) {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(
-                        root.get(criteria.getFieldName()), criteria.getValue().toString()));
+                        getPath(root, criteria.getFieldName()), criteria.getValue().toString()));
             } else if (criteria.getOperation().equals(SearchOperation.NOT_EQUAL)) {
                 predicates.add(criteriaBuilder.notEqual(
-                        root.get(criteria.getFieldName()), criteria.getValue()));
+                        getPath(root, criteria.getFieldName()), criteria.getValue()));
             } else if (criteria.getOperation().equals(SearchOperation.EQUAL)) {
                 predicates.add(criteriaBuilder.equal(
-                        root.get(criteria.getFieldName()), criteria.getValue()));
+                        getPath(root, criteria.getFieldName()), criteria.getValue()));
             } else if (criteria.getOperation().equals(SearchOperation.MATCH)) {
                 predicates.add(criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get(criteria.getFieldName()).as(String.class)),
+                        criteriaBuilder.lower(getPath(root, criteria.getFieldName()).as(String.class)),
                         "%" + criteria.getValue().toString().toLowerCase() + "%"));
             } else if (criteria.getOperation().equals(SearchOperation.MATCH_END)) {
                 predicates.add(criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get(criteria.getFieldName()).as(String.class)),
+                        criteriaBuilder.lower(getPath(root, criteria.getFieldName()).as(String.class)),
                         criteria.getValue().toString().toLowerCase() + "%"));
             } else if (criteria.getOperation().equals(SearchOperation.MATCH_START)) {
                 predicates.add(criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get(criteria.getFieldName()).as(String.class)),
+                        criteriaBuilder.lower(getPath(root, criteria.getFieldName()).as(String.class)),
                         "%" + criteria.getValue().toString().toLowerCase()));
             } else if (criteria.getOperation().equals(SearchOperation.IN)) {
-                predicates.add(criteriaBuilder.in(root.get(criteria.getFieldName())).value(criteria.getValue()));
+                System.out.println("???????????????????????????????????????????????????????????????");
+                predicates.add(criteriaBuilder.in(getPath(root, criteria.getFieldName())).value(criteria.getValue()));
             } else if (criteria.getOperation().equals(SearchOperation.NOT_IN)) {
-                predicates.add(criteriaBuilder.not(root.get(criteria.getFieldName())).in(criteria.getValue()));
+                predicates.add(criteriaBuilder.not(getPath(root, criteria.getFieldName())).in(criteria.getValue()));
             }
         }
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+    }
+
+    private <Y> Path<Y> getPath(Root<T> root, String attributeName) {
+        List<String> list = new LinkedList<>(
+                Arrays.asList(attributeName.split("\\.")));
+
+        Path<Y> path = list.size() > 1 ?
+                root.join(list.remove(0)) : root.get(list.remove(0));
+        for (String part : list) {
+            path = path.get(part);
+        }
+        return path;
     }
 
 }

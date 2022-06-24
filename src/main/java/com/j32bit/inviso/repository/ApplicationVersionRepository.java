@@ -48,4 +48,18 @@ public interface ApplicationVersionRepository extends JpaRepository<ApplicationV
     @Query("SELECT MAX(av.version) FROM ApplicationVersion av WHERE av.application.id = :applicationId")
     BigDecimal getLastVersionNumberById(@Param("applicationId") Long applicationId);
 
+    /**
+     *
+     * @param applicationId
+     * @param version
+     * @return
+     */
+    @Query("SELECT new com.j32bit.inviso.domain.ApplicationVersion(av.id, av.createdAt, av.updatedAt," +
+            "av.name, av.description, av.shortName, av.version, av.application) FROM ApplicationVersion av " +
+            "LEFT OUTER JOIN Application a ON av.application.id = a.id WHERE a.id = :applicationId " +
+            "AND av.version = :version")
+    Optional<ApplicationVersion> findAppInfoByApplicationIdAndVersion(Long applicationId, BigDecimal version);
+
+    Optional<ApplicationVersion> findByApplicationIdAndVersion(Long applicationId, BigDecimal version);
+
 }

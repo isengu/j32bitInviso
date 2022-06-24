@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -89,6 +90,22 @@ public class ApplicationVersionService {
                 ApplicationVersionDto.class);
 
         return ApplicationReqResConverter.toResponse(applicationVersionDto);
+    }
+
+    public ApplicationVersionDto getVersionOfApplication(Long applicationId, BigDecimal version) {
+        ApplicationVersion applicationVersion = applicationVersionRepository
+                .findByApplicationIdAndVersion(applicationId, version)
+                .orElseThrow(() -> new InvisoException("Application with given id and version not found!"));
+
+        return modelMapper.map(applicationVersion, ApplicationVersionDto.class);
+    }
+
+    public ApplicationVersionDto getAppInfoOfVersionOfApplication(Long applicationId, BigDecimal version) {
+        ApplicationVersion applicationVersion = applicationVersionRepository
+                .findAppInfoByApplicationIdAndVersion(applicationId, version)
+                .orElseThrow(() -> new InvisoException("Application with given id and version not found!"));
+
+        return modelMapper.map(applicationVersion, ApplicationVersionDto.class);
     }
 
     public ApplicationReqResDto save(String json) {
