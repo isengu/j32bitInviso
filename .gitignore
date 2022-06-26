@@ -35,3 +35,6 @@ build/
 ### Logs ###
 Logs/
 logs/
+
+## File Uploads ##
+uploads/**

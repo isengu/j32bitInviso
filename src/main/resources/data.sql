@@ -58,6 +58,9 @@ INSERT INTO backend.component
 VALUES(55, 'Video');
 INSERT INTO backend.component
 (id, "type")
+VALUES(56, 'Image');
+INSERT INTO backend.component
+(id, "type")
 VALUES(54, 'Signature');
 
 -- Option Data --

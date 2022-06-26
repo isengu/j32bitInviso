@@ -10,7 +10,6 @@ import com.j32bit.inviso.dto.response.ApplicationStructureNameDto;
 import com.j32bit.inviso.enums.SearchOperation;
 import com.j32bit.inviso.exception.InvisoException;
 import com.j32bit.inviso.repository.ApplicationVersionRepository;
-import com.j32bit.inviso.shared.SearchSpecification;
 import com.j32bit.inviso.utils.SearchCriteria;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

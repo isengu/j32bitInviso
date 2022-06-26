@@ -1,4 +1,4 @@
-package com.j32bit.inviso.shared;
+package com.j32bit.inviso.service;
 
 import com.j32bit.inviso.enums.SearchOperation;
 import com.j32bit.inviso.utils.SearchCriteria;
@@ -60,7 +60,6 @@ public class SearchSpecification<T> implements Specification<T> {
                         criteriaBuilder.lower(getPath(root, criteria.getFieldName()).as(String.class)),
                         "%" + criteria.getValue().toString().toLowerCase()));
             } else if (criteria.getOperation().equals(SearchOperation.IN)) {
-                System.out.println("???????????????????????????????????????????????????????????????");
                 predicates.add(criteriaBuilder.in(getPath(root, criteria.getFieldName())).value(criteria.getValue()));
             } else if (criteria.getOperation().equals(SearchOperation.NOT_IN)) {
                 predicates.add(criteriaBuilder.not(getPath(root, criteria.getFieldName())).in(criteria.getValue()));
