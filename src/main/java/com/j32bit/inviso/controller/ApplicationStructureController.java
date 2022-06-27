@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -79,6 +80,13 @@ public class ApplicationStructureController {
     @PostMapping("/saveStructure")
     public ResponseEntity<?> saveStructure(@RequestBody String json) {
         return new ResponseEntity<>(applicationVersionService.save(json).getId(), HttpStatus.OK);
+    }
+
+    @Transactional
+    @PostMapping("/delete")
+    public ResponseEntity<?> deleteStructure(@RequestBody Map<String, String> request) {
+        applicationVersionService.delete(request.get("shortName"));
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
 }

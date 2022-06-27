@@ -4,6 +4,7 @@ import com.j32bit.inviso.domain.*;
 import com.j32bit.inviso.dto.response.ApplicationStructureNameDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -20,7 +21,7 @@ public interface ApplicationVersionRepository extends JpaRepository<ApplicationV
      */
     @Query("SELECT new com.j32bit.inviso.domain.ApplicationVersion(" +
             "a.id, a.createdAt, a.updatedAt, a.name, a.description, a.shortName, a.version, a.application) " +
-            "FROM ApplicationVersion a WHERE a.version = (SELECT MAX(a1.version) FROM " +
+            "FROM ApplicationVersion a WHERE a.status = 0 AND a.version = (SELECT MAX(a1.version) FROM " +
             "ApplicationVersion a1 WHERE a1.application.id = a.application.id)")
     List<ApplicationVersion> getAll();
 
@@ -33,7 +34,7 @@ public interface ApplicationVersionRepository extends JpaRepository<ApplicationV
 
     @Query("SELECT new com.j32bit.inviso.dto.response.ApplicationStructureNameDto(av.name, av.application.id) " +
             "FROM ApplicationVersion av LEFT JOIN UserApplication ua ON (ua.application.id = av.application.id) " +
-            "WHERE av.version = (SELECT MAX(av1.version) FROM ApplicationVersion av1 " +
+            "WHERE av.status = 0 AND av.version = (SELECT MAX(av1.version) FROM ApplicationVersion av1 " +
             "WHERE av1.application.id = av.application.id) AND ua.user.username = :username")
     List<ApplicationStructureNameDto> getStructureNamesOfUser(@Param("username") String username);
 
@@ -41,8 +42,8 @@ public interface ApplicationVersionRepository extends JpaRepository<ApplicationV
     // this type of query is also used in ApplicationVersionSpecification, so make sure to improve that too.
     // https://stackoverflow.com/a/47516321/13891083
     @Query("SELECT new com.j32bit.inviso.dto.response.ApplicationStructureNameDto(av.name, av.application.id) " +
-            "FROM ApplicationVersion av WHERE av.status = 0 AND av.version = (SELECT MAX(av1.version) FROM ApplicationVersion av1 " +
-            "WHERE av1.application.id = av.application.id)")
+            "FROM ApplicationVersion av WHERE av.status = 0 AND av.version = (SELECT MAX(av1.version) " +
+            "FROM ApplicationVersion av1 WHERE av1.application.id = av.application.id)")
     List<ApplicationStructureNameDto> getStructureNames();
 
     @Query("SELECT MAX(av.version) FROM ApplicationVersion av WHERE av.application.id = :applicationId")
@@ -61,5 +62,17 @@ public interface ApplicationVersionRepository extends JpaRepository<ApplicationV
     Optional<ApplicationVersion> findAppInfoByApplicationIdAndVersion(Long applicationId, BigDecimal version);
 
     Optional<ApplicationVersion> findByApplicationIdAndVersion(Long applicationId, BigDecimal version);
+
+    @Modifying
+    @Query("UPDATE ApplicationVersion a SET a.status = 1" +
+            "WHERE a.shortName = :shortName " +
+            "AND a.version = (SELECT MAX(a1.version) FROM ApplicationVersion a1 " +
+            "WHERE a.application = a1.application)")
+    void softDeleteByShortName(@Param("shortName") String shortName);
+
+    @Query(value = "select count(*) from (select distinct on (application_id) * " +
+            "from backend.application_version order by application_id, version desc) as a " +
+            "where a.status = 0", nativeQuery = true)
+    Long countOfNotDeletedApplications();
 
 }

@@ -1,6 +1,7 @@
 package com.j32bit.inviso.controller;
 
 import com.j32bit.inviso.dto.response.DashboardReportResponseDto;
+import com.j32bit.inviso.service.ApplicationVersionService;
 import com.j32bit.inviso.service.ControlMetadataService;
 import com.j32bit.inviso.service.DashboardService;
 import com.j32bit.inviso.service.UserService;
@@ -24,6 +25,7 @@ public class DashboardController {
 
     private final UserService userService;
     private final DashboardService dashboardService;
+    private final ApplicationVersionService applicationVersionService;
 
     @GetMapping("/filledFormCountWithoutTask")
     public ResponseEntity<?> formCountWithoutTask(
@@ -41,8 +43,9 @@ public class DashboardController {
 
     @GetMapping("/activeTasks")
     public ResponseEntity<?> activeTasks() {
-        Map<String, Integer> response = new HashMap<>();
-        response.put("count", 0);
+        Map<String, Long> response = new HashMap<>();
+        response.put("count", applicationVersionService.countOfNotDeletedApplications());
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

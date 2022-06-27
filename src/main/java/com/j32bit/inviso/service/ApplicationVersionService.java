@@ -36,6 +36,10 @@ public class ApplicationVersionService {
     private final ApplicationService applicationService;
     private final ModelMapper modelMapper;
 
+    public Long countOfNotDeletedApplications() {
+        return applicationVersionRepository.countOfNotDeletedApplications();
+    }
+
     public List<ApplicationReqResDto> getAllApplications() {
         return applicationVersionRepository
                 .getAll()
@@ -123,6 +127,13 @@ public class ApplicationVersionService {
         catch (IOException e) {
             throw new InvisoException(e.getMessage());
         }
+    }
+
+    public void delete(String shortName) {
+        if (shortName == null) {
+            throw new InvisoException("Application short name can not be null");
+        }
+        applicationVersionRepository.softDeleteByShortName(shortName);
     }
 
 }
