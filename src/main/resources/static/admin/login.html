@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+
+<html>
+
+<!-- Mirrored from natilus.invisoapp.com.tr/admin/login.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 18 Jun 2022 14:07:35 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>INVISO</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900&amp;subset=latin,greek,greek-ext,vietnamese,cyrillic-ext,latin-ext,cyrillic" rel="stylesheet" type="text/css" />
+
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/img/favicon-96x96.png" />
+
+  <link rel="stylesheet" href="styles/auth-c70bf83198.css" />
+ <link rel="stylesheet" href="styles/vendor-4b5f36cf11.css" />
+
+  
+  
+  
+</head>
+<body ng-app="BlurAdmin.login" ng-controller="LoginCTRL" class="block-position">
+  <div class="auth-block">
+
+     
+  	 <div class="form-group"><img src="app/img/logo.png" height="45" class="auth-logo" /></div>
+     <div ng-if="errorMessage!=''">
+     	<div class="center-block alert alert-danger" ng-bind="errorMessage"></div>
+     </div>
+     
+    <form ng-submit="login()" class="form-horizontal">
+      <div class="form-group">
+        <label for="inputEmail3" class="col-sm-3 control-label" translate="{{'LOGINPAGE_USERNAME'}}"></label>
+
+        <div class="col-sm-9">
+          <input type="text" ng-model="userCredentials['username']" name="username" class="form-control" id="inputEmail3" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="inputPassword3" class="col-sm-3 control-label" translate="{{'LOGINPAGE_PASSWORD'}}"></label>
+        <div class="col-sm-9">
+          <input type="password" ng-model="userCredentials['password']" class="form-control" name="password" id="inputPassword3" />
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-6">
+          <button type="submit" class="btn btn-success btn-auth pull-left" translate="{{ 'LOGINPAGE_SIGNUP'}}"></button>
+	      <select class="form-control language-select pull-left" ng-model="selectedLanguage" ng-change="changeLanguage()">
+	         <option value="tr" translate="{{ 'LOGINPAGE_LANGUAGESELECT_TR'}}"></option>
+	         <option value="en" translate="{{ 'LOGINPAGE_LANGUAGESELECT_EN'}}"></option>
+		  </select>
+        </div>
+      </div>
+      <a href="forgot-password.html" class="forgot-pass" translate="{{'LOGIN_MODAL_FORGOTPASSWORD'}}"></a>
+      
+    </form>
+
+
+  </div>
+<script src="scripts/vendor-44aead9977.js"></script>
+<script src="scripts/app-eb82942498.js"></script>
+
+<script src="scripts/bootstrap.min.js"></script>
+
+</body>
+
+<!-- Mirrored from natilus.invisoapp.com.tr/admin/login.html by HTTrack Website Copier/3.x [XR&CO'2014], Sat, 18 Jun 2022 14:08:03 GMT -->
+</html>

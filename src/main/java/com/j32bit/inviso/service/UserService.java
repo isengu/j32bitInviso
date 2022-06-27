@@ -8,7 +8,6 @@ import com.j32bit.inviso.dto.request.WithSpecRequestDto;
 import com.j32bit.inviso.enums.SearchOperation;
 import com.j32bit.inviso.exception.InvisoException;
 import com.j32bit.inviso.repository.UserRepository;
-import com.j32bit.inviso.shared.SearchSpecification;
 import com.j32bit.inviso.utils.SearchCriteria;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -24,6 +23,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -112,6 +112,8 @@ public class UserService {
 
         if (user.getPassword() != null && user.getId() != null) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
+        } else if (user.getId() == null) {
+            user.setPassword(passwordEncoder.encode("2405c79d70f52098b0647f79e96616d8"));
         }
 
         return modelMapper.map(userRepository.save(user), UserDto.class);
@@ -139,9 +141,9 @@ public class UserService {
             User updatedUser = objectMapper.readerForUpdating(existingUser)
                     .readValue(objectMapper.writeValueAsString(userDto));
 
-            if (userDto.getPassword() != null) {
-                updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-            }
+//            if (userDto.getPassword() != null) {
+//                updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+//            }
 
             // save the merged user
             return this.save(modelMapper.map(updatedUser, UserDto.class));
@@ -157,5 +159,20 @@ public class UserService {
      */
     public void delete(UserDto userDto) {
         userRepository.deleteById(userDto.getId());
+    }
+
+    /**
+     * Get count of active(not deleted) users.
+     *
+     * @return count of active users.
+     */
+    public long getActiveUserCount() {
+        Set<SearchCriteria> criterias = new HashSet<>();
+        // status=0 means active users, not deleted(soft delete)
+        criterias.add(new SearchCriteria("status", "0", SearchOperation.EQUAL));
+
+        SearchSpecification<User> searchSpecification = new SearchSpecification<>(criterias);
+
+        return userRepository.count(searchSpecification);
     }
 }

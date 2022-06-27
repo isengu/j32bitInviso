@@ -7,6 +7,7 @@ import com.j32bit.inviso.dto.FormComponentDataDto;
 import com.j32bit.inviso.dto.FormComponentDto;
 import com.j32bit.inviso.dto.request.FormDataSaveRequestDto;
 import com.j32bit.inviso.dto.request.WithSpecRequestDto;
+import com.j32bit.inviso.dto.response.DashboardReportResponseDto;
 import com.j32bit.inviso.repository.ControlMetadataRepositroy;
 import com.j32bit.inviso.utils.SearchCriteria;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 @Log4j2
@@ -125,6 +127,10 @@ public class ControlMetadataService {
         Page<ControlMetadata> page = controlMetadataRepositroy.findAll(searchSpecification, pageable);
 
         return page.map(e -> modelMapper.map(e, ControlMetadataDto.class));
+    }
+
+    public Long countBetweenDates(Timestamp start, Timestamp end) {
+        return controlMetadataRepositroy.countByControlDateBeforeAndControlDateAfter(start, end);
     }
 
 }
