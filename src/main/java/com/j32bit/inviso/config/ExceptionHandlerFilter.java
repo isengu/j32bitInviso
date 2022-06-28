@@ -34,8 +34,8 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
             GenericResponse<Object> description = GenericResponse
                     .createErrorResponse()
-                    .code("EXPIRED")
-                    .description("JWT token is expired");
+                    .error("EXPIRED")
+                    .errorDescription("JWT token is expired");
 
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json");
@@ -45,8 +45,8 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
             GenericResponse<Object> description = GenericResponse
                     .createErrorResponse()
-                    .code(ex.getMessage())
-                    .description(env.getProperty(ex.getMessage()));
+                    .error(ex.getMessage())
+                    .errorDescription(env.getProperty(ex.getMessage()));
 
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json");

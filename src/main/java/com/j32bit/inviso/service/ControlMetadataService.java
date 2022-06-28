@@ -7,7 +7,7 @@ import com.j32bit.inviso.dto.FormComponentDataDto;
 import com.j32bit.inviso.dto.FormComponentDto;
 import com.j32bit.inviso.dto.request.FormDataSaveRequestDto;
 import com.j32bit.inviso.dto.request.WithSpecRequestDto;
-import com.j32bit.inviso.dto.response.DashboardReportResponseDto;
+import com.j32bit.inviso.dto.response.InvisoPageable;
 import com.j32bit.inviso.repository.ControlMetadataRepositroy;
 import com.j32bit.inviso.utils.SearchCriteria;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +33,12 @@ public class ControlMetadataService {
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
 
+    /**
+     * Save submitted forms data.
+     *
+     * @param formDataSaveRequestDto submitted data.
+     * @return recently saved {@link ControlMetadataDto}.
+     */
     public ControlMetadataDto saveFormData(FormDataSaveRequestDto formDataSaveRequestDto) {
         List<FormComponentDataDto> formComponentDataDtoList = new ArrayList<>();
 
@@ -41,7 +47,6 @@ public class ControlMetadataService {
         Map<String, Long> componentMapShortNametoId = formDataSaveRequestDto.getComponents();
 
         for (String shortName : componentShortNames) {
-            // TODO if shortname not exist - exception
             Long formComponentId = componentMapShortNametoId.get(shortName);
 
             formComponentDataDtoList.add(FormComponentDataDto.builder()
@@ -69,7 +74,15 @@ public class ControlMetadataService {
         return modelMapper.map(save, ControlMetadataDto.class);
     }
 
-    public Map<String, Object> getAllControlMetadataWithSpec(WithSpecRequestDto withSpecRequestDto) {
+    /**
+     * Get all submitted form data with spec
+     * and convert them to {@link FormDataSaveRequestDto}.
+     *
+     * @param withSpecRequestDto specification.
+     * @return {@link FormDataSaveRequestDto} as {@link InvisoPageable}.
+     */
+    public InvisoPageable<FormDataSaveRequestDto> getAllControlMetadataWithSpec(
+            WithSpecRequestDto withSpecRequestDto) {
         // get all as pageable
         Page<ControlMetadataDto> page = findAllWithSpec(withSpecRequestDto);
 
@@ -77,12 +90,16 @@ public class ControlMetadataService {
 
         // convert FormDataSaveRequestDtos to FormDataSaveRequestDtos
         for (ControlMetadataDto controlMetadataDto : page.getContent()) {
-            List<FormComponentDataDto> formComponentDataDtoList = controlMetadataDto.getFormComponentDatas();
+            List<FormComponentDataDto> formComponentDataDtoList =
+                    controlMetadataDto.getFormComponentDatas();
 
-            // make HashMap as type of {formComponentShortName : formComponentDataValue} from formComponentDataDtos
+            // make HashMap as type of {formComponentShortName : formComponentDataValue}
+            // from formComponentDataDtos
             Map<String, Object> formComponentsDataMap = new HashMap<>();
             for (FormComponentDataDto formComponentDataDto : formComponentDataDtoList) {
-                formComponentsDataMap.put(formComponentDataDto.getFormComponent().getShortName(), formComponentDataDto.getValue());
+                formComponentsDataMap.put(
+                        formComponentDataDto.getFormComponent().getShortName(),
+                        formComponentDataDto.getValue());
             }
 
             formDataSaveRequestDtoList.add(FormDataSaveRequestDto.builder()
@@ -99,20 +116,18 @@ public class ControlMetadataService {
                     .build());
         }
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("objList", formDataSaveRequestDtoList);
-        response.put("totalSize", page.getTotalElements());
-
-        return response;
+        return new InvisoPageable<>(formDataSaveRequestDtoList,
+                page.getTotalElements());
     }
 
+    /**
+     * Find all submitted form datas with spec.
+     *
+     * @param withSpecRequestDto specifications.
+     * @return {@link Page} of {@link ControlMetadataDto}s.
+     */
     public Page<ControlMetadataDto> findAllWithSpec(WithSpecRequestDto withSpecRequestDto) {
         Set<SearchCriteria> criterias = withSpecRequestDto.getFilterRequest();
-
-//        // if "status=1"(deleted) isn't specified always add "status=0"(not deleted) creteria
-//        if (!criterias.contains(new SearchCriteria("status", "1", null))) {
-//            criterias.add(new SearchCriteria("status", "0", SearchOperation.EQUAL));
-//        }
 
         SearchSpecification<ControlMetadata> searchSpecification =
                 new SearchSpecification<>(criterias);
@@ -129,8 +144,17 @@ public class ControlMetadataService {
         return page.map(e -> modelMapper.map(e, ControlMetadataDto.class));
     }
 
+    /**
+     * Count of submitted forms beetween given dates.
+     *
+     * @param start start date.
+     * @param end end date.
+     * @return count of submitted forms in interval.
+     */
     public Long countBetweenDates(Timestamp start, Timestamp end) {
-        return controlMetadataRepositroy.countByControlDateBeforeAndControlDateAfter(start, end);
+        return controlMetadataRepositroy
+                .countByControlDateBeforeAndControlDateAfter(
+                        start, end);
     }
 
 }

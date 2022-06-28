@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
-import java.math.BigDecimal;
 import java.util.*;
 
 /**

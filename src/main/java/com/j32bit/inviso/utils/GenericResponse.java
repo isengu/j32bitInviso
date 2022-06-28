@@ -33,8 +33,8 @@ import java.util.List;
 public class GenericResponse<T> {
 
     private String type;
-    private String code;
-    private String description;
+    private String error;
+    private String error_description;
     private List<T> data;
 
 
@@ -74,13 +74,13 @@ public class GenericResponse<T> {
         return new GenericResponse<>(ResponseType.SUCCESS.toString(), data);
     }
 
-    public GenericResponse<T> code(String code){
-        this.code = code;
+    public GenericResponse<T> error(String error){
+        this.error = error;
         return this;
     }
 
-    public GenericResponse<T> description(String description){
-        this.description = description;
+    public GenericResponse<T> errorDescription(String description){
+        this.error_description = description;
         return this;
     }
 

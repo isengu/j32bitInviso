@@ -1,6 +1,7 @@
 package com.j32bit.inviso.config;
 
 import com.j32bit.inviso.security.InvisoDaoAuthenticationProvider;
+import com.j32bit.inviso.security.JwtSecurityFilter;
 import com.j32bit.inviso.service.InvisoUserDetailsService;
 import com.j32bit.inviso.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +10,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -24,6 +25,7 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserService userService;
@@ -73,6 +75,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/authentication/token").permitAll()
                 .antMatchers("/api/test").permitAll()
                 .antMatchers("/api/test/**").permitAll()
+                .antMatchers("/api/dashboard/**").hasRole("ADMIN")
+                .antMatchers("/api/application/**").hasRole("ADMIN")
                 .antMatchers("/api/**").authenticated()
                 .antMatchers("/actuator/**").permitAll();
 

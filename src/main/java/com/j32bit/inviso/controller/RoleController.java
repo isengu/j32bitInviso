@@ -20,8 +20,14 @@ public class RoleController {
 
     private final RoleService roleService;
 
+    /**
+     * Get all roles that can be given to a user.
+     *
+     * @return {@link List} of {@link RoleDto}s.
+     */
     @GetMapping("/getAllRole")
     public ResponseEntity<List<RoleDto>> getAllRole() {
         return new ResponseEntity<>(roleService.getAllRole(), HttpStatus.OK);
     }
+
 }

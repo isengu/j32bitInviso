@@ -1,4 +1,4 @@
-package com.j32bit.inviso.config;
+package com.j32bit.inviso.security;
 
 
 import com.j32bit.inviso.service.InvisoUserDetailsService;
@@ -75,6 +75,7 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
             //set authentication with token
             SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 
+            log.debug("Roles are: " + storedUserDetails.getAuthorities());
             log.debug("Authentication is set for username: {}", username);
         }
 
@@ -86,12 +87,6 @@ public class JwtSecurityFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
 
-    }
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return "/api/user/authenticate".equals(request.getServletPath()) ||
-                request.getServletPath().startsWith("/api/terminals/main");
     }
 
 }

@@ -31,7 +31,7 @@ public class InvisoUserDetailsService implements UserDetailsService {
 
         for (RoleDto role : user.getRoles()) {
             log.debug("loadUserByUsername: user: " + user.getUsername() + " role: " + role.getRoleName());
-            grantedAuthorities.add(new SimpleGrantedAuthority(role.getRoleName()));
+            grantedAuthorities.add(new SimpleGrantedAuthority("ROLE_"+role.getRoleName()));
         }
 
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),

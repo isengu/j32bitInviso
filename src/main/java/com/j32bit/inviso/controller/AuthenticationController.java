@@ -22,11 +22,10 @@ public class AuthenticationController {
      * Authenticate user, if correct return jwt token.
      * <br><br>
      * Request body sample:
-     * <br>
-     * <code>
+     * <pre>
      *     client_id=mfc&client_secret=secret&grant_type=password&
      *     password=2405c79d70f52098b0647f79e96616d8&username=sau
-     * </code>
+     * </pre>
      *
      * @param username username credential.
      * @param password password credential.

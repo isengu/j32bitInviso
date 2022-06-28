@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -128,27 +129,35 @@ public class UserService {
      */
     public UserDto update(UserDto userDto) {
         if (userDto.getId() == null) {
-            throw new InvisoException("Please provide the id to update an existing record.");
+            throw new InvisoException(
+                    HttpStatus.BAD_REQUEST,
+                    "No Id Provided",
+                    "Please provide id of the record you want to update.",
+                    "No id provided for the record to be updated.");
         }
 
         // get user with the id from database
         User existingUser = userRepository.findById(userDto.getId())
                 .orElseThrow(() ->
-                        new InvisoException("User could not found with id: " + userDto.getId()));
+                        new InvisoException(
+                                HttpStatus.NOT_FOUND,
+                                "User Not Found",
+                                "User not found with id: " + userDto.getId()));
 
         try {
             // merge fields of existing user and given user
             User updatedUser = objectMapper.readerForUpdating(existingUser)
                     .readValue(objectMapper.writeValueAsString(userDto));
 
-//            if (userDto.getPassword() != null) {
-//                updatedUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
-//            }
-
             // save the merged user
             return this.save(modelMapper.map(updatedUser, UserDto.class));
         } catch (JsonProcessingException e) {
-            throw new InvisoException("json processing error");
+            throw new InvisoException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Json Processing Error",
+                    e.getLocalizedMessage(),
+                    e.getLocalizedMessage() + " occured. Original message: " +
+                            e.getOriginalMessage() + ". Location: " + e.getLocation());
         }
     }
 

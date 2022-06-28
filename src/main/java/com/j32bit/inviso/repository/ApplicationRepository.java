@@ -1,11 +1,12 @@
 package com.j32bit.inviso.repository;
 
-import com.j32bit.inviso.domain.*;
+import com.j32bit.inviso.domain.Application;
+import com.j32bit.inviso.domain.Component;
+import com.j32bit.inviso.domain.Option;
+import com.j32bit.inviso.domain.Validation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 

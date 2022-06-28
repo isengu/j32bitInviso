@@ -490,7 +490,7 @@ function() {
         createReportURL: "/mfc/report/createReport",
         getReportResultURL: "/mfc/report/getReportOutputDocument",
         getReportResultStatusURL: "/mfc/report/getReportResultStatus",
-        getFormStructureURL: "/api/entry/getApplicationStructure",
+        getFormStructureURL: "/api/structure/getApplicationStructure",
         getApplicationsURL: "/api/structure/getStructure",
         getApplicationNamesURL: "/api/structure/getStructureNames",
         saveReportURL: "/mfc/report/saveReport",
@@ -515,7 +515,7 @@ function() {
         getActiveUsersURL: "/api/dashboard/activeUsers",
         getActiveDevicesURL: "/api/dashboard/activeDevices",
         getCompletedTasksURL: "/api/dashboard/countOfTasks",
-        getActiveTasksURL: "/api/dashboard/activeTasks",
+        getActiveTasksURL: "/api/dashboard/activeForms",
         getAcviteFormsAndCountsURL: "/api/dashboard/formsAndCounts",
         getCountOfFreeForm: "/api/dashboard/filledFormCountWithoutTask"
     }).constant("dataSourceURLs", {
