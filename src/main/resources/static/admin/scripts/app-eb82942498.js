@@ -179,40 +179,7 @@ function() {
     "use strict";
 
     function e(e) {
-        e.state("more", {
-            url: "/more",
-            template: '<ui-view autoscroll="true" autoscroll-body-top=""></ui-view>',
-            abstract: !0,
-            title: "SIDEMENU_MORE",
-            sidebarMeta: {
-                icon: "ion-grid",
-                order: 5
-            }
-        }).state("more.device", {
-            url: "/device",
-            templateUrl: "app/pages/more/devices/device.html",
-            title: "SIDEMENU_DEVICE",
-            controller: "deviceCtrl",
-            sidebarMeta: {
-                order: 2
-            }
-        }).state("more.datasource", {
-            url: "/datasource",
-            templateUrl: "app/pages/more/datasource/datasource.html",
-            title: "SIDEMENU_DATASOURCE",
-            controller: "dataSourceCtrl",
-            sidebarMeta: {
-                order: 1
-            }
-        }).state("more.listLogs", {
-            url: "/listLogs",
-            templateUrl: "app/pages/more/list-logs/list-logs.html",
-            title: "SIDEMENU_DEVICELOG",
-            controller: "listLogCtrl",
-            sidebarMeta: {
-                order: 0
-            }
-        })
+
     }
     e.$inject = ["$stateProvider"], angular.module("BlurAdmin.pages.more", []).config(e)
 }(),
@@ -237,26 +204,10 @@ function() {
             sidebarMeta: {
                 order: 0
             }
-        }).state("report.reportDesign", {
-            url: "/reportDesign",
-            templateUrl: "app/pages/report/report-design/report-design.html",
-            title: "SIDEMENU_REPORT_DESIGNREPORT",
-            controller: "reportDesignCTRL",
-            sidebarMeta: {
-                order: 1
-            }
         }).state("viewReport", {
             url: "/viewReport",
             templateUrl: "app/pages/report/report-result/viewReport.html",
             controller: "viewReportCTRL"
-        }).state("report.formDataExport", {
-            url: "/formDataExport",
-            templateUrl: "app/pages/report/formdata-export/formDataExport.html",
-            title: "SIDEMENU_REPORT_FORMDATA_EXPORT",
-            controller: "formDataExportCTRL",
-            sidebarMeta: {
-                order: 2
-            }
         })
     }
     e.$inject = ["$stateProvider"], angular.module("BlurAdmin.pages.report", []).config(e)
@@ -278,16 +229,7 @@ function() {
     "use strict";
 
     function e(e) {
-        e.state("task", {
-            url: "/task",
-            templateUrl: "app/pages/task/task.html",
-            title: "SIDEMENU_TASK",
-            controller: "taskCTRL",
-            sidebarMeta: {
-                icon: "glyphicon glyphicon-tasks",
-                order: 10
-            }
-        })
+
     }
     e.$inject = ["$stateProvider"], angular.module("BlurAdmin.pages.task", []).config(e)
 }(),
@@ -295,23 +237,7 @@ function() {
     "use strict";
 
     function e(e) {
-        e.state("controlManagement", {
-            url: "/controlManagement",
-            template: '<ui-view autoscroll="true" autoscroll-body-top></ui-view>',
-            abstract: !0,
-            title: "SIDEMENU_CONTROLMANAGEMENT",
-            sidebarMeta: {
-                icon: "ion-clipboard",
-                order: 2
-            }
-        }).state("controlManagement.assignTaskAndEquipment", {
-            url: "/assignTaskAndEquipment",
-            templateUrl: "app/pages/task-management/assign-task-and-equipment/assign-task-and-equipment.html",
-            title: "SIDEMENU_CONTROLMANAGEMENT_ASSIGNTASK",
-            sidebarMeta: {
-                order: 0
-            }
-        }).state("controlManagement.equipmentOperations", {
+        e.state("controlManagement.equipmentOperations", {
             url: "/equipmentOperations",
             template: '<ui-view autoscroll="true" autoscroll-body-top></ui-view>',
             abstract: !0,
