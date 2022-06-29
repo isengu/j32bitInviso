@@ -1,4 +1,4 @@
-var backendLocation = "http://localhost:8081";
+var backendLocation = window.location.origin;
 ! function() {
     "use strict";
 

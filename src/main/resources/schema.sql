@@ -1,5 +1,6 @@
+CREATE SCHEMA IF NOT EXISTS backend;
 DROP SCHEMA backend CASCADE;
-CREATE SCHEMA backend AUTHORIZATION postgres;
+CREATE SCHEMA backend;
 
 -- backend.application definition
 
