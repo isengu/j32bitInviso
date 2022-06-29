@@ -85,7 +85,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(exceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtSecurityFilter, UsernamePasswordAuthenticationFilter.class);
 
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
+
+        http.logout().logoutUrl("/logout").deleteCookies("JSESSIONID").logoutSuccessUrl("/admin/login.html");
     }
 
     @Override

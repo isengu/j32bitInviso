@@ -22,7 +22,7 @@ function() {
     }).constant("authenticationURL", {
         url: "/api/authentication/token",
         controlTokenURL: "/api/authentication/checkAuth",
-        logoutURL: "/mfc/user/logout"
+        logoutURL: "/logout"
     }).constant("profileURLs", {
         updateUserURL: "/api/user/update",
         getUserInformationURL: "/api/user/getUserCredentials"

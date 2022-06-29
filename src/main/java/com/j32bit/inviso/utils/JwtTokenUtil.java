@@ -17,7 +17,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtTokenUtil {
 
-    private static final int EXPIRATION_MILLISECONDS = 5 * 60 * 1000;
+    private static final int EXPIRATION_MILLISECONDS = 30 * 60 * 1000;
 
     @Value("${info.app.jwt.secret}")
     private String secret;
