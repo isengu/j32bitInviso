@@ -178,5 +178,5 @@ Returns filled forms by filtering, sorting and pagination.
 [license-url]: https://github.com/dolmushcu/j32bitInviso/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/linkedin_username
-[product-screenshot]: screenshotINVISO.png
+[product-screenshot]: ScreenshotINVISO.png
 [demo-url]: https://inviso-spring.herokuapp.com/
