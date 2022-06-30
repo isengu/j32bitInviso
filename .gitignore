@@ -37,4 +37,5 @@ Logs/
 logs/
 
 ## File Uploads ##
-uploads/**
+uploads/*.*
+!uploads/.gitkeep
