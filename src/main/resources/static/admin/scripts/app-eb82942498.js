@@ -2923,6 +2923,7 @@ function() {
         }, e.setTabProperties = function(t, a) {
             t.stopPropagation(), e.properties.template = a, e.isColumnSelected = !1, e.isFormSelected = !1, e.isRowSelected = !1, e.isComponentSelected = !1, e.isComponentClicked = !0, e.entity.name = "Navigation"
         }, e.setHomePage = function(a) {
+            e.isLoading = !1;
             if (e.currentPage.homePage)
                 for (var o = 0; o < t.currentApp.pages.length; o++) {
                     t.currentApp.pages[o].shortName != a && (t.currentApp.pages[o].homePage = !1)
@@ -3105,7 +3106,7 @@ function() {
                         }
                 }
             }
-            d.sendInfoComponentImages(a, t.currentApp.id, o.get("username")), console.log("After added", t.currentApp), c && p ? (i.data = t.currentApp, i.userName = o.get("username"), s.service("POST", r.saveStructureURL, {}, i).then((function(a) {
+            d.sendInfoComponentImages(a, t.currentApp.id, o.get("username")), console.log("After added", t.currentApp, "\n", c, "\n", p, e.isLoading), c && p ? (i.data = t.currentApp, i.userName = o.get("username"), s.service("POST", r.saveStructureURL, {}, i).then((function(a) {
                 l.success(n("translate")("PALETTE_SAVESUCCESSMESSAGE"), ""), e.isLoading = !1, t.isEditorSaved = !0
             }), (function() {
                 t.isStatusSet || (l.error(n("translate")("PALETTE_SAVEERRORMESSAGE"), ""), e.isLoading = !1, t.isEditorSaved = !1)
