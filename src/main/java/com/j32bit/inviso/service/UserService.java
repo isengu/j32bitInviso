@@ -19,13 +19,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -183,5 +186,44 @@ public class UserService {
         SearchSpecification<User> searchSpecification = new SearchSpecification<>(criterias);
 
         return userRepository.count(searchSpecification);
+    }
+
+    /**
+     * Change password of given user after some security checks.
+     *
+     * @param oldPass old(current) password of the user.
+     * @param newPass new password of the user.
+     * @param username username of the user.
+     */
+    @Transactional
+    public void changePassword(String oldPass, String newPass, String username) {
+        // check if given username matches currently logged in user
+        String currentlyLoggedInUsername = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+        if (!Objects.equals(currentlyLoggedInUsername, username)) {
+            throw new InvisoException(
+                    HttpStatus.BAD_REQUEST,
+                    "You Naughty",
+                    "You can't change the password of someone else.",
+                    "User: " + currentlyLoggedInUsername + ", tried to change the password of: " + username);
+        }
+        // check if given user exist
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new InvisoException(
+                        HttpStatus.NOT_FOUND,
+                        "User Not Found",
+                        "User with username: " + username + " not found!"));
+        // check if given oldPassword match
+        if (!Objects.equals(user.getPassword(), oldPass)) {
+            throw new InvisoException(
+                    HttpStatus.BAD_REQUEST,
+                    "Password No Match",
+                    "Provided password for user: " + username + " is not true!");
+        }
+
+        userRepository.updatePassword(newPass, user.getId());
     }
 }

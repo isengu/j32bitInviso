@@ -456,7 +456,7 @@ function() {
         getDataDraftURL: "/mfc/services/sendFormData/getdraft",
         getDatasourceValues: "/mfc/services/getDatasource",
         getTasksURL: "/mfc/assignment/getAssignmentOfUserApplication"
-    }).constant("changePasswordURL", "/mfc/user/changePassword").value("Application", {}).constant("deviceURLs", {
+    }).constant("changePasswordURL", "/api/user/changePassword").value("Application", {}).constant("deviceURLs", {
         getCompanyDevicesURL: "/services/device/getCompanyDevices",
         saveCompanyDeviceURL: "/services/device/saveCompanyDevice",
         deleteCompanyDeviceURL: "/services/device/deleteCompanyDevice"

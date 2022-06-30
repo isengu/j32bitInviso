@@ -1,6 +1,7 @@
 package com.j32bit.inviso.controller;
 
 import com.j32bit.inviso.dto.UserDto;
+import com.j32bit.inviso.dto.request.PasswordChangeRequsetDto;
 import com.j32bit.inviso.dto.request.SaveRequestBaseDto;
 import com.j32bit.inviso.dto.request.WithSpecRequestDto;
 import com.j32bit.inviso.dto.response.InvisoPageable;
@@ -130,6 +131,25 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> delete(@RequestBody UserDto userDto) {
         userService.delete(userDto);
+        return new ResponseEntity<>(null, HttpStatus.OK);
+    }
+
+    /**
+     * Change password of the user.
+     * <br><br>
+     * <pre>
+     *     {"password": {"key": "...", "value": "..."}, "userName": "sau"}
+     * </pre>
+     *
+     * @param passwordChangeRequsetDto password change request.
+     * @return null
+     */
+    @PostMapping("/changePassword")
+    public ResponseEntity<?> changePassword(@RequestBody PasswordChangeRequsetDto passwordChangeRequsetDto) {
+        userService.changePassword(
+                passwordChangeRequsetDto.getPassword().getOldPass(),
+                passwordChangeRequsetDto.getPassword().getNewPass(),
+                passwordChangeRequsetDto.getUserName());
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
