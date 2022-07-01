@@ -114,10 +114,19 @@ public class UserService {
     public UserDto save(UserDto userDto) {
         User user = modelMapper.map(userDto, User.class);
 
-        if (user.getPassword() != null && user.getId() != null) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        } else if (user.getId() == null) {
+        if (userRepository.existsByUsername(user.getUsername()) ||
+                userRepository.existsByEmail(user.getEmail())) {
+            throw new InvisoException(
+                    HttpStatus.BAD_REQUEST,
+                    "Username/Email Already Exist",
+                    "Provided email or username already exist!"
+            );
+        }
+
+        if (user.getPassword() == null || user.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode("2405c79d70f52098b0647f79e96616d8"));
+        } else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
 
         return modelMapper.map(userRepository.save(user), UserDto.class);
@@ -147,13 +156,24 @@ public class UserService {
                                 "User Not Found",
                                 "User not found with id: " + userDto.getId()));
 
+        if ((!Objects.equals(userDto.getUsername(), existingUser.getUsername()) &&
+                userRepository.existsByUsername(userDto.getUsername())) ||
+                (!Objects.equals(userDto.getEmail(), existingUser.getEmail()) &&
+                        userRepository.existsByEmail(userDto.getEmail()))) {
+            throw new InvisoException(
+                    HttpStatus.BAD_REQUEST,
+                    "Username/Email Already Exist",
+                    "Provided email or username already exist!"
+            );
+        }
+
         try {
             // merge fields of existing user and given user
             User updatedUser = objectMapper.readerForUpdating(existingUser)
                     .readValue(objectMapper.writeValueAsString(userDto));
 
             // save the merged user
-            return this.save(modelMapper.map(updatedUser, UserDto.class));
+            return modelMapper.map(userRepository.save(updatedUser), UserDto.class);
         } catch (JsonProcessingException e) {
             throw new InvisoException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
