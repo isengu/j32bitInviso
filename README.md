@@ -52,6 +52,8 @@ download all of the static content with [Httrack](https://www.httrack.com/) from
 the original site and modify it a little bit (just for the demonstration purpose 
 for the backend i've build) and integrate it with the backend.
 
+**You can access demo [Here][demo-url] with username and password: `sau:sau`.**
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 
