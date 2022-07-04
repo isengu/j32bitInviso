@@ -39,3 +39,6 @@ logs/
 ## File Uploads ##
 uploads/*.*
 !uploads/.gitkeep
+!uploads/file1656919330993.jpg
+!uploads/file1656919384013.jpg
+!uploads/file1656919570244.png
