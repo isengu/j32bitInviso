@@ -78,7 +78,7 @@ built using [Maven](https://spring.io/guides/gs/maven/). You can clone it and ru
 it locally on your machine as shown below or using an IDE like Intellij idea.
 
    ```sh
-   $ git clone https://github.com/dolmushcu/j32bitInviso.git
+   $ git clone https://github.com/isengu/j32bitInviso.git
    $ cd j32bitInviso
    $ ./mvnw spring-boot:run
    ```
